@@ -12,6 +12,11 @@ function saveTask() {
     localStorage.setItem('task', JSON.stringify(tasks));
 }
 
+function escapeHTML(html) {
+    const div = document.createElement("div");
+    div.innerText = html;
+    return div.innerHTML
+}
 
 
 function isDuplicateTask(newTitle,  excludeIndex = -1) {
@@ -21,12 +26,14 @@ function isDuplicateTask(newTitle,  excludeIndex = -1) {
 
 function handleTaskAction(e) {
     const taskItem = e.target.closest('.task-item');
-    const taskIndex = +taskItem.getAttribute('task-index');
+    if (!taskItem) return;
+    const taskIndex = +taskItem.dataset.index; // dataset
+    console.log(taskIndex);
+    
     const task = tasks[taskIndex];
     
     if(e.target.closest('.edit')){
         let newTitle = prompt('Enter new title: ', task.title);
-        
         if(newTitle === null) return;
 
         newTitle = newTitle.trim();
@@ -56,7 +63,7 @@ function handleTaskAction(e) {
         
     }
     
-}
+}   
 
 function addTask(e) {
     e.preventDefault();
@@ -88,8 +95,8 @@ function renderTask() {
     }
 
     const html = tasks.map((task, index) => {
-        return `<li class="task-item ${task.completed ? "completed" : ""}" task-index="${index} ">
-            <span class="task-title">${task.title}</span>
+        return `<li class="task-item ${task.completed ? "completed" : ""}" data-index="${index} ">
+            <span class="task-title">${escapeHTML(task.title)}</span>
             <div class="task-action">
                 <button class="task-btn edit">Edit</button>
                 <button class="task-btn done">${task.completed ? 'Mark as done' : "Mark as undone"}</button>
